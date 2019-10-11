@@ -11,6 +11,18 @@ const (
 	Homologacao TAmb = 2
 )
 
+type TWebService int
+
+const (
+	ConsultaStatus TWebService = iota
+	ConsultaProtocolo
+	ConsultaCadastro
+	Autorizacao
+	RetAutorizacao
+	Evento
+	Inutilizacao
+)
+
 type ProtNFe struct {
 	Versao  string `json:"-" xml:"versao,attr"`
 	InfProt struct {

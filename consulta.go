@@ -12,7 +12,6 @@ import (
 
 const verConsSitNFe = "4.00"
 const xmlnsConsSitNFe = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeConsultaProtocolo4"
-const urlConsSitNFeSP = "https://nfe.fazenda.sp.gov.br/ws/nfeconsultaprotocolo4.asmx"
 
 type ConsSitNFe struct {
 	XMLName xml.Name `json:"-" xml:"http://www.portalfiscal.inf.br/nfe consSitNFe"`
@@ -45,6 +44,15 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 		c.XServ = "CONSULTAR"
 	}
 
+	cUF, _, _, _, _, _, _, _, _, err := GetChaveInfo(c.ChNFe)
+	if err != nil {
+		return RetConsSitNFe{}, nil, err
+	}
+	url, err := getURLWS(cUF, ConsultaProtocolo)
+	if err != nil {
+		return RetConsSitNFe{}, nil, err
+	}
+
 	xmlfile, err := xml.Marshal(c)
 	if err != nil {
 		return RetConsSitNFe{}, nil, err
@@ -54,6 +62,7 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 	if err != nil {
 		return RetConsSitNFe{}, nil, err
 	}
+	xmlfile = []byte(append([]byte(xml.Header), xmlfile...))
 
 	cert, err := tls.LoadX509KeyPair(certFile, certKeyFile)
 	if err != nil {
@@ -69,7 +78,9 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 			},
 		},
 	}
-	req, err := http.NewRequest("POST", urlConsSitNFeSP, bytes.NewBuffer(xmlfile))
+	fmt.Printf("url: %v\n", url)
+	fmt.Printf("%v\n", string(xmlfile))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(xmlfile))
 	if err != nil {
 		return RetConsSitNFe{}, nil, err
 	}
@@ -80,6 +91,7 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 		return RetConsSitNFe{}, nil, err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		return RetConsSitNFe{}, nil, fmt.Errorf("Falha na consulta à receita: %v", resp.Status)
 	}

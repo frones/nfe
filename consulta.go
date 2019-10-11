@@ -78,8 +78,6 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 			},
 		},
 	}
-	fmt.Printf("url: %v\n", url)
-	fmt.Printf("%v\n", string(xmlfile))
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(xmlfile))
 	if err != nil {
 		return RetConsSitNFe{}, nil, err

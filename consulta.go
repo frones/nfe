@@ -1,8 +1,6 @@
 package gonfe
 
 import (
-	"bytes"
-	"crypto/tls"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -15,15 +13,15 @@ const xmlnsConsSitNFe = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeConsultaProt
 
 type ConsSitNFe struct {
 	XMLName xml.Name `json:"-" xml:"http://www.portalfiscal.inf.br/nfe consSitNFe"`
-	Versao  string   `json:"-" xml:"versao,attr"`
+	Versao  string   `json:"versao" xml:"versao,attr"`
 	TpAmb   TAmb     `json:"tpAmb" xml:"tpAmb"`
-	XServ   string   `json:"-" xml:"xServ"`
+	XServ   string   `json:"xServ" xml:"xServ"`
 	ChNFe   string   `json:"chNFe" xml:"chNFe"`
 }
 
 type RetConsSitNFe struct {
 	XMLName       xml.Name         `json:"-" xml:"http://www.portalfiscal.inf.br/nfe retConsSitNFe"`
-	Versao        string           `json:"-" xml:"versao,attr"`
+	Versao        string           `json:"versao" xml:"versao,attr"`
 	TpAmb         TAmb             `json:"tpAmb" xml:"tpAmb"`
 	VerAplic      string           `json:"verAplic" xml:"verAplic"`
 	CStat         int              `json:"cStat" xml:"cStat"`
@@ -36,15 +34,15 @@ type RetConsSitNFe struct {
 	ProcEventoNFe *[]ProcEventoNFe `json:"procEventoNFe,omitempty" xml:"procEventoNFe,omitempty"`
 }
 
-func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe, []byte, error) {
-	if c.Versao == "" {
-		c.Versao = verConsSitNFe
-	}
-	if c.XServ == "" {
-		c.XServ = "CONSULTAR"
+func ConsultaNFe(dfechave string, tpAmb TAmb, client *http.Client, optReq ...func(req *http.Request)) (RetConsSitNFe, []byte, error) {
+	cons := ConsSitNFe{
+		Versao: verConsSitNFe,
+		TpAmb:  tpAmb,
+		XServ:  "CONSULTAR",
+		ChNFe:  dfechave,
 	}
 
-	cUF, _, _, _, _, _, _, _, _, err := GetChaveInfo(c.ChNFe)
+	cUF, _, _, _, _, _, _, _, _, err := GetChaveInfo(cons.ChNFe)
 	if err != nil {
 		return RetConsSitNFe{}, nil, err
 	}
@@ -53,45 +51,33 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 		return RetConsSitNFe{}, nil, err
 	}
 
-	xmlfile, err := xml.Marshal(c)
+	xmlfile, err := xml.Marshal(cons)
 	if err != nil {
-		return RetConsSitNFe{}, nil, err
+		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na geração do XML de consulta. Detalhes: %v", err)
 	}
 
-	xmlfile, err = GetSoapEnvelope(xmlfile, xmlnsConsSitNFe)
+	xmlfile, err = getSoapEnvelope(xmlfile, xmlnsConsSitNFe)
 	if err != nil {
-		return RetConsSitNFe{}, nil, err
+		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na geração do envelope SOAP. Detalhes: %v", err)
 	}
 	xmlfile = []byte(append([]byte(xml.Header), xmlfile...))
 
-	cert, err := tls.LoadX509KeyPair(certFile, certKeyFile)
+	req, err := newRequest(url, xmlfile)
 	if err != nil {
-		return RetConsSitNFe{}, nil, err
+		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na criação da requisição (http.Request) para a URL %s. Detalhes: %v", url, err)
 	}
-
-	client := http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				Certificates:       []tls.Certificate{cert},
-				InsecureSkipVerify: true,
-				Renegotiation:      tls.RenegotiateFreelyAsClient,
-			},
-		},
+	for _, opt := range optReq {
+		opt(req)
 	}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(xmlfile))
-	if err != nil {
-		return RetConsSitNFe{}, nil, err
-	}
-	req.Header.Set("Content-Type", "application/soap+xml; charset=utf-8")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return RetConsSitNFe{}, nil, err
+		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na requisição ao WebService %s. Detalhes: %v", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return RetConsSitNFe{}, nil, fmt.Errorf("Falha na consulta à receita: %v", resp.Status)
+		return RetConsSitNFe{}, nil, fmt.Errorf("Falha na consulta à receita (%s): %v", url, resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -99,7 +85,7 @@ func (c ConsSitNFe) Consulta(certFile string, certKeyFile string) (RetConsSitNFe
 		return RetConsSitNFe{}, nil, err
 	}
 
-	xmlfile, err = ReadSoapEnvelope(body)
+	xmlfile, err = readSoapEnvelope(body)
 	if err != nil {
 		return RetConsSitNFe{}, nil, err
 	}

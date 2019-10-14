@@ -6,7 +6,7 @@ import (
 
 const urlConsSitNFeAM = "https://nfe.sefaz.am.gov.br/services2/services/NfeConsulta4"
 const urlConsSitNFeBA = "https://nfe.sefaz.ba.gov.br/webservices/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx"
-const urlConsSitNFeCE = "https://nfe.sefaz.ce.gov.br/nfe4/services/NFeConsultaProtocolo4?wsdl"
+const urlConsSitNFeCE = "https://nfe.sefaz.ce.gov.br/nfe4/services/NFeConsultaProtocolo4"
 const urlConsSitNFeGO = "https://nfe.sefaz.go.gov.br/nfe/services/NFeConsultaProtocolo4"
 const urlConsSitNFeMG = "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeConsultaProtocolo4"
 const urlConsSitNFeMS = "https://nfe.sefaz.ms.gov.br/ws/NFeConsultaProtocolo4"

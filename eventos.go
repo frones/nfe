@@ -9,7 +9,7 @@ import (
 
 type ProcEventoNFe struct {
 	XMLName   xml.Name      `json:"-" xml:"procEventoNFe"`
-	Versao    string        `json:"-" xml:"versao,attr"`
+	Versao    string        `json:"versao" xml:"versao,attr"`
 	Evento    *EventoNFe    `json:"evento" xml:"http://www.portalfiscal.inf.br/nfe evento"`
 	RetEvento *RetEventoNFe `json:"retEvento" xml:"retEvento"`
 }
@@ -17,7 +17,7 @@ type ProcEventoNFe struct {
 type EventoNFe struct {
 	Versao    string `json:"-" xml:"versao,attr"`
 	InfEvento struct {
-		Versao     string    `json:"-" xml:"versao,attr,omitempty"`
+		Versao     string    `json:"versao,omitempty" xml:"versao,attr,omitempty"`
 		ID         string    `json:"Id" xml:"Id,attr"`
 		COrgao     int       `json:"cOrgao" xml:"cOrgao"`
 		TpAmb      TAmb      `json:"tpAmb" xml:"tpAmb"`
@@ -37,7 +37,7 @@ type EventoNFe struct {
 }
 
 type RetEventoNFe struct {
-	Versao    string `json:"-" xml:"versao,attr"`
+	Versao    string `json:"versao" xml:"versao,attr"`
 	InfEvento struct {
 		ID          string    `json:"Id" xml:"Id,attr,omitempty"`
 		TpAmb       TAmb      `json:"tpAmb" xml:"tpAmb"`

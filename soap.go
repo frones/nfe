@@ -26,7 +26,7 @@ type EnvelopeResult struct {
 	} `xml:"Body"`
 }
 
-func GetSoapEnvelope(msg []byte, xmlns string) ([]byte, error) {
+func getSoapEnvelope(msg []byte, xmlns string) ([]byte, error) {
 	var env Envelope
 
 	env.Xsi = "http://www.w3.org/2001/XMLSchema-instance"
@@ -38,7 +38,7 @@ func GetSoapEnvelope(msg []byte, xmlns string) ([]byte, error) {
 	return xml.Marshal(env)
 }
 
-func ReadSoapEnvelope(msg []byte) ([]byte, error) {
+func readSoapEnvelope(msg []byte) ([]byte, error) {
 	var env EnvelopeResult
 	error := xml.Unmarshal(msg, &env)
 

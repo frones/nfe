@@ -3,6 +3,9 @@ package gonfe
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/xml"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -45,4 +48,48 @@ func newRequest(url string, body []byte) (*http.Request, error) {
 	req.Header.Set("User-Agent", defaultUserAgent)
 
 	return req, nil
+}
+
+// sendRequest é uma função que se encarrega de fazer o envelopamento da requisição, enviar pra Sefaz com certificado digital e desenvelopar o retorno.
+func sendRequest(obj interface{}, url string, xmlns string, client *http.Client, optReq ...func(req *http.Request)) ([]byte, error) {
+	xmlfile, err := xml.Marshal(obj)
+	if err != nil {
+		return nil, fmt.Errorf("Erro na geração do XML de requisição. Detalhes: %v", err)
+	}
+
+	xmlfile, err = getSoapEnvelope(xmlfile, xmlns)
+	if err != nil {
+		return nil, fmt.Errorf("Erro na geração do envelope SOAP. Detalhes: %v", err)
+	}
+	xmlfile = []byte(append([]byte(xml.Header), xmlfile...))
+
+	req, err := newRequest(url, xmlfile)
+	if err != nil {
+		return nil, fmt.Errorf("Erro na criação da requisição (http.Request) para a URL %s. Detalhes: %v", url, err)
+	}
+	for _, opt := range optReq {
+		opt(req)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Erro na requisição ao WebService %s. Detalhes: %v", url, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Falha na consulta à receita (%s): %v", url, resp.Status)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	xmlfile, err = readSoapEnvelope(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return xmlfile, err
 }

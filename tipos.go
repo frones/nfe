@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// TAmb representa o ambiente (tpAmb) que será usado na comunicação.
 type TAmb int
 
 const (
@@ -11,6 +12,7 @@ const (
 	Homologacao TAmb = 2
 )
 
+// TWebService representa o serviço que será consultado. Usado pela função getURLWS para obter a URL da requisição.
 type TWebService int
 
 const (
@@ -23,6 +25,7 @@ const (
 	Inutilizacao
 )
 
+// ProtNFe representa o XML do protocolo de autorização da NFe, encontrado em RetConsSitNFe.
 type ProtNFe struct {
 	Versao  string `json:"-" xml:"versao,attr"`
 	InfProt struct {

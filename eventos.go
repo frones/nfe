@@ -7,6 +7,7 @@ import (
 	"github.com/amdonov/xmlsig"
 )
 
+// ProcEventoNFe representa o XML que contem tanto a requisição (EventoNFe) quanto o retorno da Sefaz (RetEventoNFe), e poderá vir dentro de consultas de status (ConsSitNFe).
 type ProcEventoNFe struct {
 	XMLName   xml.Name      `json:"-" xml:"procEventoNFe"`
 	Versao    string        `json:"versao" xml:"versao,attr"`
@@ -14,6 +15,7 @@ type ProcEventoNFe struct {
 	RetEvento *RetEventoNFe `json:"retEvento" xml:"retEvento"`
 }
 
+// EventoNFe representa o XML de registro de um evento junto à Sefaz.
 type EventoNFe struct {
 	Versao    string `json:"-" xml:"versao,attr"`
 	InfEvento struct {
@@ -36,6 +38,7 @@ type EventoNFe struct {
 	Signature *xmlsig.Signature `json:"-" xml:"Signature"`
 }
 
+// RetEventoNFe representa o XML de retorno da Sefaz à solicitação de registro de evento. Normalmente será utilizado encapsulado em um ProcEventoNFe.
 type RetEventoNFe struct {
 	Versao    string `json:"versao" xml:"versao,attr"`
 	InfEvento struct {

@@ -20,6 +20,7 @@ const urlConsSitNFeSVRS = "https://nfe.svrs.rs.gov.br/ws/NfeConsulta/NfeConsulta
 const urlConsSitNFeSVCAN = "https://www.svc.fazenda.gov.br/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx"
 const urlConsSitNFeSVCRS = "https://nfe.svrs.rs.gov.br/ws/NfeConsulta/NfeConsulta4.asmx"
 
+// getURLWS obtem a URL para o serviço e a UF informados.
 func getURLWS(cUF string, ws TWebService) (string, error) {
 	switch ws {
 	case ConsultaProtocolo:

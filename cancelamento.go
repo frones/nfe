@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// RetCancNFe representa o XML de retorno da Sefaz do cancelamento da NFe. Não é mais usado, tendo sido substituído pelos eventos (EventoNFe), mas ainda pode ser retornado em uma consulta de protocolo (ConsSitNFe) de notas antigas.
 type RetCancNFe struct {
 	Versao  string `json:"-" xml:"versao,attr"`
 	InfCanc struct {

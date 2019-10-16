@@ -1,12 +1,15 @@
+//O package gonfe fornece funções para fazer toda a comunicação com as Sefazes no âmbito da NFe.
 package gonfe
 
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 	"unicode"
 )
 
+// isNumber verifica se todos os caracteres da string são dígitos numéricos (usado internamente para validação da chave de acesso).
 func isNumber(s string) bool {
 	if s == "" {
 		return false
@@ -21,11 +24,40 @@ func isNumber(s string) bool {
 	return true
 }
 
+// validaCNPJ verifica se o CNPJ informado é válido.
 func validaCNPJ(cnpj string) bool {
-	return true
+	cnpj = strings.Replace(cnpj, ".", "", -1)
+	cnpj = strings.Replace(cnpj, "-", "", -1)
+	cnpj = strings.Replace(cnpj, "/", "", -1)
 
+	if (len(cnpj) != 14) || (!isNumber(cnpj)) {
+		return false
+	}
+
+	sum := 0
+	for i, c := range cnpj[:len(cnpj)-2] {
+		sum += int(c-'0') * (((len(cnpj) - 3 - i) % 8) + 2)
+	}
+	dv := ((sum * 10) % 11) % 10
+	if dv != int(cnpj[12]-'0') {
+		return false
+	}
+
+	sum = 0
+	for i, c := range cnpj[:len(cnpj)-1] {
+		sum += int(c-'0') * (((len(cnpj) - 2 - i) % 8) + 2)
+	}
+	dv = ((sum * 10) % 11) % 10
+	if dv != int(cnpj[13]-'0') {
+		return false
+	}
+
+	return true
 }
 
+// GetChaveInfo extrai todas as informações que estão embutidas em uma chave de acesso da NFe:
+//
+// cUF, Ano, Mes, CNPJ, Modelo (55/65), Número da NFe, tpEmis e cNF.
 func GetChaveInfo(DFeChave string) (string, int, int, string, string, int, int, string, int, error) {
 	if (len(DFeChave) != 44) || (!isNumber(DFeChave)) {
 		return "", 0, 0, "", "", 0, 0, "", 0, fmt.Errorf("Chave de Acesso inválida: %s!", DFeChave)
@@ -59,6 +91,14 @@ func GetChaveInfo(DFeChave string) (string, int, int, string, string, int, int, 
 	return cUF, ano, mes, cnpj, mod, serie, numNF, tipoEmi, cNF, nil
 }
 
+// ValidaChaveDeAcesso verifica se a chave de acesso fornecida é válida, através dos seguintes critérios:
+//   * Tamanho = 44 e conteúdo numérico
+//   * Dígito verificador consistente
+//   * cUF corresponde a um item da tabela do IBGE
+//   * Mes/Ano válidos, posteriores a 01/2006 e não posteriores ao ano atual
+//   * CNPJ válido e diferente de 00000000000000
+//   * Modelo igual a 55 ou 65 ou 67
+//   * Número da NF diferente de zero
 func ValidaChaveDeAcesso(DFeChave string) bool {
 	if (len(DFeChave) != 44) || (!isNumber(DFeChave)) {
 		return false
@@ -69,10 +109,7 @@ func ValidaChaveDeAcesso(DFeChave string) bool {
 		n := int(c - '0')
 		sum += n * (((len(DFeChave) - 2 - i) % 8) + 2)
 	}
-	dv := 11 - (sum % 11)
-	if dv >= 10 {
-		dv = 0
-	}
+	dv := ((sum * 10) % 11) % 10
 
 	if strconv.Itoa(dv) != DFeChave[len(DFeChave)-1:] {
 		return false

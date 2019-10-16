@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 )
 
+// Envelope representa o XML do envelope SOAP que será usado na comunicação.
 type Envelope struct {
 	XMLName xml.Name `xml:"soap12:Envelope"`
 	Xsi     string   `xml:"xmlns:xsi,attr"`
@@ -17,6 +18,7 @@ type Envelope struct {
 	} `xml:"soap12:Body"`
 }
 
+// EnvelopeResult representa o XML do envelope SOAP de retorno da requisição.
 type EnvelopeResult struct {
 	XMLName xml.Name `xml:"Envelope"`
 	Body    struct {
@@ -26,6 +28,7 @@ type EnvelopeResult struct {
 	} `xml:"Body"`
 }
 
+// getSoapEnvelope envelopa um XML fornecido de acordo com o padrão SOAP.
 func getSoapEnvelope(msg []byte, xmlns string) ([]byte, error) {
 	var env Envelope
 
@@ -38,6 +41,7 @@ func getSoapEnvelope(msg []byte, xmlns string) ([]byte, error) {
 	return xml.Marshal(env)
 }
 
+// readSoapEnvelope extrai o XML de resposta de um envelope SOAP de retorno.
 func readSoapEnvelope(msg []byte) ([]byte, error) {
 	var env EnvelopeResult
 	error := xml.Unmarshal(msg, &env)

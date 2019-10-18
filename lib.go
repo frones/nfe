@@ -4,9 +4,10 @@ package gonfe
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 	"unicode"
+
+	"github.com/frones/gobr"
 )
 
 // isNumber verifica se todos os caracteres da string são dígitos numéricos (usado internamente para validação da chave de acesso).
@@ -19,37 +20,6 @@ func isNumber(s string) bool {
 		if !unicode.IsDigit(d) {
 			return false
 		}
-	}
-
-	return true
-}
-
-// validaCNPJ verifica se o CNPJ informado é válido.
-func validaCNPJ(cnpj string) bool {
-	cnpj = strings.Replace(cnpj, ".", "", -1)
-	cnpj = strings.Replace(cnpj, "-", "", -1)
-	cnpj = strings.Replace(cnpj, "/", "", -1)
-
-	if (len(cnpj) != 14) || (!isNumber(cnpj)) {
-		return false
-	}
-
-	sum := 0
-	for i, c := range cnpj[:len(cnpj)-2] {
-		sum += int(c-'0') * (((len(cnpj) - 3 - i) % 8) + 2)
-	}
-	dv := ((sum * 10) % 11) % 10
-	if dv != int(cnpj[12]-'0') {
-		return false
-	}
-
-	sum = 0
-	for i, c := range cnpj[:len(cnpj)-1] {
-		sum += int(c-'0') * (((len(cnpj) - 2 - i) % 8) + 2)
-	}
-	dv = ((sum * 10) % 11) % 10
-	if dv != int(cnpj[13]-'0') {
-		return false
 	}
 
 	return true
@@ -139,7 +109,7 @@ func ValidaChaveDeAcesso(DFeChave string) bool {
 		return false
 	}
 
-	if (cnpj == "00000000000000") || (!validaCNPJ(cnpj)) {
+	if !gobr.ValidaCNPJ(cnpj) {
 		return false
 	}
 
@@ -152,4 +122,127 @@ func ValidaChaveDeAcesso(DFeChave string) bool {
 	}
 
 	return true
+}
+
+// GetcUF retorna o código IBGE da UF a partir da sigla
+func GetcUF(uf string) int {
+	switch uf {
+	case "RO":
+		return 11
+	case "AC":
+		return 12
+	case "AM":
+		return 13
+	case "RR":
+		return 14
+	case "PA":
+		return 15
+	case "AP":
+		return 16
+	case "TO":
+		return 17
+	case "MA":
+		return 21
+	case "PI":
+		return 22
+	case "CE":
+		return 23
+	case "RN":
+		return 24
+	case "PB":
+		return 25
+	case "PE":
+		return 26
+	case "AL":
+		return 27
+	case "SE":
+		return 28
+	case "BA":
+		return 29
+	case "MG":
+		return 31
+	case "ES":
+		return 32
+	case "RJ":
+		return 33
+	case "SP":
+		return 35
+	case "PR":
+		return 41
+	case "SC":
+		return 42
+	case "RS":
+		return 43
+	case "MS":
+		return 50
+	case "MT":
+		return 51
+	case "GO":
+		return 52
+	case "DF":
+		return 53
+	}
+	return 0
+}
+
+// GetUF retorna a sigla da UF a partir do código IBGE
+func GetUF(cUF int) string {
+	switch cUF {
+	case 11:
+		return "RO"
+	case 12:
+		return "AC"
+	case 13:
+		return "AM"
+	case 14:
+		return "RR"
+	case 15:
+		return "PA"
+	case 16:
+		return "AP"
+	case 17:
+		return "TO"
+	case 21:
+		return "MA"
+	case 22:
+		return "PI"
+	case 23:
+		return "CE"
+	case 24:
+		return "RN"
+	case 25:
+		return "PB"
+	case 26:
+		return "PE"
+	case 27:
+		return "AL"
+	case 28:
+		return "SE"
+	case 29:
+		return "BA"
+	case 31:
+		return "MG"
+	case 32:
+		return "ES"
+	case 33:
+		return "RJ"
+	case 35:
+		return "SP"
+	case 41:
+		return "PR"
+	case 42:
+		return "SC"
+	case 43:
+		return "RS"
+	case 50:
+		return "MS"
+	case 51:
+		return "MT"
+	case 52:
+		return "GO"
+	case 53:
+		return "DF"
+	}
+	return ""
+
 }

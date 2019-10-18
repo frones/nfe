@@ -72,6 +72,41 @@ const (
 	urlHomConsStatServSVCRS = "https://nfe-homologacao.svrs.rs.gov.br/ws/NfeStatusServico/NfeStatusServico4.asmx"
 )
 
+const (
+	urlConsCadAM = "https://nfe.sefaz.am.gov.br/services2/services/cadconsultacadastro2"
+	urlConsCadBA = "https://nfe.sefaz.ba.gov.br/webservices/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
+	urlConsCadCE = "https://nfe.sefaz.ce.gov.br/nfe4/services/CadConsultaCadastro4"
+	urlConsCadGO = "https://nfe.sefaz.go.gov.br/nfe/services/CadConsultaCadastro4"
+	urlConsCadMG = "https://nfe.fazenda.mg.gov.br/nfe2/services/cadconsultacadastro2"
+	urlConsCadMS = "https://nfe.sefaz.ms.gov.br/ws/CadConsultaCadastro4"
+	urlConsCadMT = "https://nfe.sefaz.mt.gov.br/nfews/v2/services/CadConsultaCadastro4"
+	urlConsCadPE = "https://nfe.sefaz.pe.gov.br/nfe-service/services/CadConsultaCadastro4"
+	urlConsCadPR = "https://nfe.sefa.pr.gov.br/nfe/CadConsultaCadastro4"
+	urlConsCadRS = "https://nfe.sefazrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
+	urlConsCadSP = "https://nfe.fazenda.sp.gov.br/ws/cadconsultacadastro4.asmx"
+	//	urlConsCadSVAN  = "https://www.sefazvirtual.fazenda.gov.br/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
+	urlConsCadSVRS = "https://nfe.svrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
+	//	urlConsCadSVCAN = "https://www.svc.fazenda.gov.br/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
+	//	urlConsCadSVCRS = "https://nfe.svrs.rs.gov.br/ws/CadConsultaCadastro/CadConsultaCadastro4.asmx"
+
+	urlHomConsCadAM = "https://homnfe.sefaz.am.gov.br/services2/services/cadconsultacadastro2"
+	urlHomConsCadBA = "https://hnfe.sefaz.ba.gov.br/webservices/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
+	urlHomConsCadCE = "https://nfeh.sefaz.ce.gov.br/nfe4/services/CadConsultaCadastro4"
+	urlHomConsCadGO = "https://homolog.sefaz.go.gov.br/nfe/services/CadConsultaCadastro4"
+	urlHomConsCadMG = "https://hnfe.fazenda.mg.gov.br/nfe2/services/cadconsultacadastroc"
+	urlHomConsCadMS = "https://hom.nfe.sefaz.ms.gov.br/ws/CadConsultaCadastro4"
+	urlHomConsCadMT = "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/CadConsultaCadastro4"
+	urlHomConsCadPE = "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/CadConsultaCadastro4"
+	urlHomConsCadPR = "https://homologacao.nfe.sefa.pr.gov.br/nfe/CadConsultaCadastro4"
+	urlHomConsCadRS = "https://nfe-homologacao.sefazrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
+	urlHomConsCadSP = "https://homologacao.nfe.fazenda.sp.gov.br/ws/cadconsultacadastro4.asmx"
+	//	urlHomConsCadSVAN  = "https://hom.sefazvirtual.fazenda.gov.br/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
+	urlHomConsCadSVRS = "https://nfe-homologacao.svrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
+
+//	urlHomConsCadSVCAN = "https://hom.svc.fazenda.gov.br/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
+//	urlHomConsCadSVCRS = "https://nfe-homologacao.svrs.rs.gov.br/ws/CadConsultaCadastro/CadConsultaCadastro4.asmx"
+)
+
 // getURLWS obtem a URL para o serviço e a UF informados.
 func getURLWS(cUF int, tpAmb TAmb, ws TWebService) (string, error) {
 	switch tpAmb {
@@ -135,6 +170,35 @@ func getURLWS(cUF int, tpAmb TAmb, ws TWebService) (string, error) {
 			case 52:
 				return urlConsStatServGO, nil
 			}
+		case ConsultaCadastro:
+			switch cUF {
+			case 11, 12, 14, 15, 16, 17, 22, 24, 25, 27, 28, 32, 33, 42, 53:
+				return urlConsCadSVRS, nil
+			case 13:
+				return urlConsCadAM, nil
+				//			case 21:
+				//				return urlConsCadSVAN, nil
+			case 23:
+				return urlConsCadCE, nil
+			case 26:
+				return urlConsCadPE, nil
+			case 29:
+				return urlConsCadBA, nil
+			case 31:
+				return urlConsCadMG, nil
+			case 35:
+				return urlConsCadSP, nil
+			case 41:
+				return urlConsCadPR, nil
+			case 43:
+				return urlConsCadRS, nil
+			case 50:
+				return urlConsCadMS, nil
+			case 51:
+				return urlConsCadMT, nil
+			case 52:
+				return urlConsCadGO, nil
+			}
 		}
 	case Homologacao:
 		switch ws {
@@ -195,6 +259,35 @@ func getURLWS(cUF int, tpAmb TAmb, ws TWebService) (string, error) {
 				return urlHomConsStatServMT, nil
 			case 52:
 				return urlHomConsStatServGO, nil
+			}
+		case ConsultaCadastro:
+			switch cUF {
+			case 11, 12, 14, 15, 16, 17, 22, 24, 25, 27, 28, 32, 33, 42, 53:
+				return urlHomConsCadSVRS, nil
+				//			case 13:
+				//				return urlHomConsCadAM, nil
+				//			case 21:
+				//				return urlHomConsCadSVAN, nil
+			case 23:
+				return urlHomConsCadCE, nil
+			case 26:
+				return urlHomConsCadPE, nil
+			case 29:
+				return urlHomConsCadBA, nil
+				//			case 31:
+				//				return urlHomConsCadMG, nil
+			case 35:
+				return urlHomConsCadSP, nil
+			case 41:
+				return urlHomConsCadPR, nil
+			case 43:
+				return urlHomConsCadRS, nil
+			case 50:
+				return urlHomConsCadMS, nil
+			case 51:
+				return urlHomConsCadMT, nil
+			case 52:
+				return urlHomConsCadGO, nil
 			}
 		}
 	}

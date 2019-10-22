@@ -39,10 +39,13 @@ func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
 }
 
 // newRequest é uma função usada internamente para criar a requisição e já definir alguns parâmetros default. Para personalizar a sua requisição (por exemplo User-Agent) ver o parâmetro optReq da ConsSitNFe.Consulta().
-func newRequest(url string, body []byte) (*http.Request, error) {
+func newRequest(url string, soapAction string, body []byte) (*http.Request, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
+	}
+	if soapAction != "" {
+		req.Header.Set("SOAPAction", soapAction)
 	}
 	req.Header.Set("Content-Type", "application/soap+xml; charset=utf-8")
 	req.Header.Set("User-Agent", defaultUserAgent)
@@ -51,7 +54,7 @@ func newRequest(url string, body []byte) (*http.Request, error) {
 }
 
 // sendRequest é uma função que se encarrega de fazer o envelopamento da requisição, enviar pra Sefaz com certificado digital e desenvelopar o retorno.
-func sendRequest(obj interface{}, url string, xmlns string, client *http.Client, optReq ...func(req *http.Request)) ([]byte, error) {
+func sendRequest(obj interface{}, url string, xmlns string, soapAction string, client *http.Client, optReq ...func(req *http.Request)) ([]byte, error) {
 	xmlfile, err := xml.Marshal(obj)
 	if err != nil {
 		return nil, fmt.Errorf("Erro na geração do XML de requisição. Detalhes: %v", err)
@@ -63,7 +66,7 @@ func sendRequest(obj interface{}, url string, xmlns string, client *http.Client,
 	}
 	xmlfile = []byte(append([]byte(xml.Header), xmlfile...))
 
-	req, err := newRequest(url, xmlfile)
+	req, err := newRequest(url, soapAction, xmlfile)
 	if err != nil {
 		return nil, fmt.Errorf("Erro na criação da requisição (http.Request) para a URL %s. Detalhes: %v", url, err)
 	}

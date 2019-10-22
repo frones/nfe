@@ -12,6 +12,7 @@ import (
 
 const VerConsCad = "2.00"
 const xmlnsConsCad = "http://www.portalfiscal.inf.br/nfe/wsdl/CadConsultaCadastro4"
+const soapActionConsCad = "http://www.portalfiscal.inf.br/nfe/wsdl/CadConsultaCadastro4/consultaCadastro"
 
 type InfCad struct {
 	IE         string     `json:"IE" xml:"IE"`
@@ -106,7 +107,7 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 		return RetConsCad{}, nil, err
 	}
 
-	xmlfile, err := sendRequest(cons, url, xmlnsConsCad, client, optReq...)
+	xmlfile, err := sendRequest(cons, url, xmlnsConsCad, soapActionConsCad, client, optReq...)
 	if err != nil {
 		return RetConsCad{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %v", err)
 	}

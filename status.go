@@ -9,6 +9,7 @@ import (
 
 const VerConsStatServ = "4.00"
 const xmlnsConsStatServ = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeStatusServico4"
+const soapActionConsStatServ = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeStatusServico4/nfeStatusServicoNF"
 
 // ConsStatServ representa o XML de consulta do status do serviço
 type ConsStatServ struct {
@@ -30,8 +31,8 @@ type RetConsStatServ struct {
 	CUF       int       `json:"cUF" xml:"cUF"`
 	DhRecbto  time.Time `json:"dhRecbto" xml:"dhRecbto"`
 	TMed      int       `json:"tMed" xml:"tMed"`
-	DhRetorno time.Time `json:"dhRetorno" xml:"dhRetorno"`
-	XObs      string    `json:"xObs" xml:"xObs"`
+	DhRetorno time.Time `json:"dhRetorno,omitempty" xml:"dhRetorno,omitempty"`
+	XObs      string    `json:"xObs,omitempty" xml:"xObs,omitempty"`
 }
 
 // Realiza a consulta na Sefaz correspondente (determinada automaticamente pelo cUF), utilizando o http.Client (ver NewHTTPClient) e as funções de personalização da http.Request fornecidos.
@@ -43,7 +44,7 @@ func (cons ConsStatServ) Consulta(client *http.Client, optReq ...func(req *http.
 		return RetConsStatServ{}, nil, err
 	}
 
-	xmlfile, err := sendRequest(cons, url, xmlnsConsStatServ, client, optReq...)
+	xmlfile, err := sendRequest(cons, url, xmlnsConsStatServ, soapActionConsStatServ, client, optReq...)
 	if err != nil {
 		return RetConsStatServ{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %v", err)
 	}

@@ -9,6 +9,7 @@ import (
 
 const VerConsSitNFe = "4.00"
 const xmlnsConsSitNFe = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeConsultaProtocolo4"
+const soapActionConsSitNFe = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeConsultaProtocolo4/nfeConsultaNF"
 
 // ConsSitNFe representa o XML de consulta de uma NFe
 type ConsSitNFe struct {
@@ -48,7 +49,7 @@ func (cons ConsSitNFe) Consulta(client *http.Client, optReq ...func(req *http.Re
 		return RetConsSitNFe{}, nil, err
 	}
 
-	xmlfile, err := sendRequest(cons, url, xmlnsConsSitNFe, client, optReq...)
+	xmlfile, err := sendRequest(cons, url, xmlnsConsSitNFe, soapActionConsSitNFe, client, optReq...)
 	if err != nil {
 		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %v", err)
 	}

@@ -2,12 +2,14 @@ package gonfe
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"time"
+
+	"github.com/spacemonkeygo/openssl"
 )
 
 const defaultTimeout = 15 * time.Second
@@ -19,7 +21,33 @@ const defaultUserAgent = "GoNFe/0.1"
 //   openssl pkcs12 -in certificado.pfx -out ~/client.pem -clcerts -nokeys -nodes
 //   openssl pkcs12 -in certificado.pfx -out ~/key.pem -nocerts -nodes
 func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
-	cert, err := tls.LoadX509KeyPair(certFile, certKeyFile)
+	pem, err := ioutil.ReadFile(certFile)
+	if err != nil {
+		return nil, err
+	}
+	cert, err := openssl.LoadCertificateFromPEM(pem)
+	if err != nil {
+		return nil, err
+	}
+
+	pem, err = ioutil.ReadFile(certKeyFile)
+	if err != nil {
+		return nil, err
+	}
+	key, err := openssl.LoadPrivateKeyFromPEM(pem)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, err := openssl.NewCtx()
+	if err != nil {
+		return nil, err
+	}
+	err = ctx.UseCertificate(cert)
+	if err != nil {
+		return nil, err
+	}
+	err = ctx.UsePrivateKey(key)
 	if err != nil {
 		return nil, err
 	}
@@ -27,10 +55,8 @@ func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
 	client := http.Client{
 		Timeout: defaultTimeout,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				Certificates:       []tls.Certificate{cert},
-				InsecureSkipVerify: true,
-				Renegotiation:      tls.RenegotiateFreelyAsClient,
+			DialTLS: func(network, address string) (net.Conn, error) {
+				return openssl.Dial(network, address, ctx, 0)
 			},
 		},
 	}

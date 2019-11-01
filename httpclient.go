@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/spacemonkeygo/openssl"
+	"github.com/spacemonkeygo/openssl" //usando openssl no lugar da crypto/tls por alguma incompatibilidade com a Sefaz-RS que não consegui determinar a causa. Posteriormente pretendo investigar mais a fundo e se necessário abrir um bug report.
 )
 
 const defaultTimeout = 15 * time.Second

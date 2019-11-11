@@ -23,33 +23,33 @@ const defaultUserAgent = "GoNFe/0.1"
 func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
 	pem, err := ioutil.ReadFile(certFile)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro na leitura do arquivo PEM do certificado. Detalhes: %v", err)
 	}
 	cert, err := openssl.LoadCertificateFromPEM(pem)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro ao carregar o certificado do arquivo PEM. Detalhes: %v", err)
 	}
 
 	pem, err = ioutil.ReadFile(certKeyFile)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro na leitura do arquivo PEM da chave. Detalhes: %v", err)
 	}
 	key, err := openssl.LoadPrivateKeyFromPEM(pem)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro ao carregar a chave do arquivo PEM. Detalhes: %v", err)
 	}
 
 	ctx, err := openssl.NewCtx()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro na criação do context SSL. Detalhes: %v", err)
 	}
 	err = ctx.UseCertificate(cert)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro ao adicionar o certificado ao context. Detalhes: %v", err)
 	}
 	err = ctx.UsePrivateKey(key)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro ao adicionar a chave ao context. Detalhes: %v", err)
 	}
 
 	client := http.Client{

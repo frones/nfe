@@ -23,33 +23,33 @@ const defaultUserAgent = "GoNFe/0.1"
 func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
 	pem, err := ioutil.ReadFile(certFile)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na leitura do arquivo PEM do certificado. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro na leitura do arquivo PEM do certificado. Detalhes: %w", err)
 	}
 	cert, err := openssl.LoadCertificateFromPEM(pem)
 	if err != nil {
-		return nil, fmt.Errorf("Erro ao carregar o certificado do arquivo PEM. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro ao carregar o certificado do arquivo PEM. Detalhes: %w", err)
 	}
 
 	pem, err = ioutil.ReadFile(certKeyFile)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na leitura do arquivo PEM da chave. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro na leitura do arquivo PEM da chave. Detalhes: %w", err)
 	}
 	key, err := openssl.LoadPrivateKeyFromPEM(pem)
 	if err != nil {
-		return nil, fmt.Errorf("Erro ao carregar a chave do arquivo PEM. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro ao carregar a chave do arquivo PEM. Detalhes: %w", err)
 	}
 
 	ctx, err := openssl.NewCtx()
 	if err != nil {
-		return nil, fmt.Errorf("Erro na criação do context SSL. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro na criação do context SSL. Detalhes: %w", err)
 	}
 	err = ctx.UseCertificate(cert)
 	if err != nil {
-		return nil, fmt.Errorf("Erro ao adicionar o certificado ao context. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro ao adicionar o certificado ao context. Detalhes: %w", err)
 	}
 	err = ctx.UsePrivateKey(key)
 	if err != nil {
-		return nil, fmt.Errorf("Erro ao adicionar a chave ao context. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro ao adicionar a chave ao context. Detalhes: %w", err)
 	}
 
 	client := http.Client{
@@ -83,18 +83,18 @@ func newRequest(url string, soapAction string, body []byte) (*http.Request, erro
 func sendRequest(obj interface{}, url string, xmlns string, soapAction string, client *http.Client, optReq ...func(req *http.Request)) ([]byte, error) {
 	xmlfile, err := xml.Marshal(obj)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na geração do XML de requisição. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro na geração do XML de requisição. Detalhes: %w", err)
 	}
 
 	xmlfile, err = getSoapEnvelope(xmlfile, xmlns)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na geração do envelope SOAP. Detalhes: %v", err)
+		return nil, fmt.Errorf("Erro na geração do envelope SOAP. Detalhes: %w", err)
 	}
 	xmlfile = []byte(append([]byte(xml.Header), xmlfile...))
 
 	req, err := newRequest(url, soapAction, xmlfile)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na criação da requisição (http.Request) para a URL %s. Detalhes: %v", url, err)
+		return nil, fmt.Errorf("Erro na criação da requisição (http.Request) para a URL %s. Detalhes: %w", url, err)
 	}
 	for _, opt := range optReq {
 		opt(req)
@@ -102,12 +102,12 @@ func sendRequest(obj interface{}, url string, xmlns string, soapAction string, c
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na requisição ao WebService %s. Detalhes: %v", url, err)
+		return nil, fmt.Errorf("Erro na requisição ao WebService %s. Detalhes: %w", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Falha na consulta à receita (%s): %v", url, resp.Status)
+		return nil, fmt.Errorf("Falha na consulta à receita (%s): %d", url, resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)

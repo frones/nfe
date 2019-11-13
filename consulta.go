@@ -51,13 +51,16 @@ func (cons ConsSitNFe) Consulta(client *http.Client, optReq ...func(req *http.Re
 
 	xmlfile, err := sendRequest(cons, url, xmlnsConsSitNFe, soapActionConsSitNFe, client, optReq...)
 	if err != nil {
-		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %v", err)
+		return RetConsSitNFe{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %w", err)
 	}
 
 	var ret RetConsSitNFe
 	err = xml.Unmarshal(xmlfile, &ret)
+	if err != nil {
+		return RetConsSitNFe{}, xmlfile, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, xmlfile)
+	}
 
-	return ret, xmlfile, err
+	return ret, xmlfile, nil
 }
 
 // Função auxiliar para executar a ConsSitNFe.Consulta()

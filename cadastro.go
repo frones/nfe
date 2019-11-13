@@ -109,13 +109,16 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 
 	xmlfile, err := sendRequest(cons, url, xmlnsConsCad, soapActionConsCad, client, optReq...)
 	if err != nil {
-		return RetConsCad{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %v", err)
+		return RetConsCad{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %w", err)
 	}
 
 	var ret RetConsCad
 	err = xml.Unmarshal(xmlfile, &ret)
+	if err != nil {
+		return RetConsCad{}, xmlfile, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, xmlfile)
+	}
 
-	return ret, xmlfile, err
+	return ret, xmlfile, nil
 }
 
 // Função auxiliar para executar a ConsCad.Consulta()

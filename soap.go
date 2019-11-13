@@ -44,7 +44,10 @@ func getSoapEnvelope(msg []byte, xmlns string) ([]byte, error) {
 // readSoapEnvelope extrai o XML de resposta de um envelope SOAP de retorno.
 func readSoapEnvelope(msg []byte) ([]byte, error) {
 	var env EnvelopeResult
-	error := xml.Unmarshal(msg, &env)
+	err := xml.Unmarshal(msg, &env)
+	if err != nil {
+		return nil, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, xmlfile)
+	}
 
-	return env.Body.NfeResultMsg.Value, error
+	return env.Body.NfeResultMsg.Value, nil
 }

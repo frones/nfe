@@ -46,13 +46,16 @@ func (cons ConsStatServ) Consulta(client *http.Client, optReq ...func(req *http.
 
 	xmlfile, err := sendRequest(cons, url, xmlnsConsStatServ, soapActionConsStatServ, client, optReq...)
 	if err != nil {
-		return RetConsStatServ{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %v", err)
+		return RetConsStatServ{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %w", err)
 	}
 
 	var ret RetConsStatServ
 	err = xml.Unmarshal(xmlfile, &ret)
+	if err != nil {
+		return RetConsStatServ{}, xmlfile, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, xmlfile)
+	}
 
-	return ret, xmlfile, err
+	return ret, xmlfile, nil
 }
 
 // Função auxiliar para executar a ConsStatServ.Consulta()

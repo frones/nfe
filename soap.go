@@ -2,6 +2,7 @@ package gonfe
 
 import (
 	"encoding/xml"
+	"fmt"
 )
 
 // Envelope representa o XML do envelope SOAP que será usado na comunicação.
@@ -46,7 +47,7 @@ func readSoapEnvelope(msg []byte) ([]byte, error) {
 	var env EnvelopeResult
 	err := xml.Unmarshal(msg, &env)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, xmlfile)
+		return nil, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, msg)
 	}
 
 	return env.Body.NfeResultMsg.Value, nil

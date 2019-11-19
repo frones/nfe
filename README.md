@@ -1,5 +1,5 @@
 # gonfe
-Bibliotecas para geração, validação, assinatura e transmissão de XMLs da NFe. Pretendo desenvolver essa biblioteca conforme a necessidade surgir. Por enquanto apenas a consulta está disponível.
+Bibliotecas para geração, validação, assinatura e transmissão de XMLs da NFe. Pretendo desenvolver essa biblioteca conforme a necessidade surgir. Por enquanto apenas as consultas de Status, NFe e Cadastro estão disponíveis.
 
 ## Atenção!!
 A crypto lib standard do Go apresenta problemas na comunicação com a Sefaz-RS e o ambiente virtual SV-RS. Há um erro 403 intermitente que não consegui debugar, de forma que optei por usar o openSSL, apesar de toda a dificuldade de se colocar para funcionar em Windows. Com tempo, pretendo tentar localizar se o erro está na crypto/tls ou na Sefaz-RS e reportar para poder voltar a utilizar a biblioteca.

@@ -1,5 +1,5 @@
 # gonfe
-Bibliotecas para geração, validação, assinatura e transmissão de XMLs da NFe. Pretendo desenvolver essa biblioteca conforme a necessidade surgir. Por enquanto apenas a consulta está disponível.
+Bibliotecas para geração, validação, assinatura e transmissão de XMLs da NFe. Pretendo desenvolver essa biblioteca conforme a necessidade surgir. Por enquanto apenas as consultas de Status, NFe e Cadastro estão disponíveis.
 
 ## Extraindo chaves de um certificado A1 (.pfx) para uso com o biblioteca
 ```

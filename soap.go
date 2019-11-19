@@ -49,6 +49,5 @@ func readSoapEnvelope(msg []byte) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, msg)
 	}
-
 	return env.Body.NfeResultMsg.Value, nil
 }

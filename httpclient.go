@@ -86,7 +86,11 @@ func sendRequest(obj interface{}, url string, xmlns string, soapAction string, c
 		return nil, fmt.Errorf("Erro na geração do XML de requisição. Detalhes: %w", err)
 	}
 
-	xmlfile, err = getSoapEnvelope(xmlfile, xmlns)
+	if url == urlConsCadMT {
+		xmlfile, err = getSoapEnvelopeConsCadMT(xmlfile, xmlns)
+	} else {
+		xmlfile, err = getSoapEnvelope(xmlfile, xmlns)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("Erro na geração do envelope SOAP. Detalhes: %w", err)
 	}
@@ -107,7 +111,7 @@ func sendRequest(obj interface{}, url string, xmlns string, soapAction string, c
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Falha na consulta à receita (%s): %d", url, resp.Status)
+		return nil, fmt.Errorf("Falha na consulta à receita (%s): %d", url, resp.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -115,7 +119,13 @@ func sendRequest(obj interface{}, url string, xmlns string, soapAction string, c
 		return nil, err
 	}
 
-	xmlfile, err = readSoapEnvelope(body)
+	if url == urlConsCadMT {
+		xmlfile, err = readSoapEnvelopeConsCadMT(body)
+	} else if url == urlConsCadMG {
+		xmlfile, err = readSoapEnvelopeConsCadMG(body)
+	} else {
+		xmlfile, err = readSoapEnvelope(body)
+	}
 	if err != nil {
 		return nil, err
 	}

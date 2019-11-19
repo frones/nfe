@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"regexp"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -68,7 +69,7 @@ type RetConsCad struct {
 		CNPJ     string    `json:"CNPJ,omitempty" xml:"CNPJ,omitempty"`
 		CPF      string    `json:"CPF,omitempty" xml:"CPF,omitempty"`
 		DhCons   time.Time `json:"dhCons" xml:"dhCons"`
-		cUF      int       `json:"cUF" xml:"cUF"`
+		CUF      int       `json:"cUF" xml:"cUF"`
 		InfCad   *[]InfCad `json:"infCad,omitempty" xml:"infCad,omitempty"`
 	} `json:"infCons" xml:"infCons"`
 }
@@ -112,8 +113,20 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 		return RetConsCad{}, nil, fmt.Errorf("Erro na comunicação com a Sefaz. Detalhes: %w", err)
 	}
 
+	// normalizando o formato do campo dhCons para incluir a timezone: (yyyy-mm-ddThh:nn:ss-03:00)
+	re := regexp.MustCompile(`(<dhCons>[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2})(<\/dhCons>)`)
+	xmlfile2 := re.ReplaceAll(xmlfile, []byte("$1-03:00$2"))
+
+	// normalizando o formato dos campos dIniAtiv, dUltSit e dBaixa para civil.Date (yyyy-mm-dd)
+	re = regexp.MustCompile(`(<dIniAtiv>[\d]{4}-[\d]{2}-[\d]{2}).*(<\/dIniAtiv>)`)
+	xmlfile2 = re.ReplaceAll(xmlfile2, []byte("$1$2"))
+	re = regexp.MustCompile(`(<dUltSit>[\d]{4}-[\d]{2}-[\d]{2}).*(<\/dUltSit>)`)
+	xmlfile2 = re.ReplaceAll(xmlfile2, []byte("$1$2"))
+	re = regexp.MustCompile(`(<dBaixa>[\d]{4}-[\d]{2}-[\d]{2}).*(<\/dBaixa>)`)
+	xmlfile2 = re.ReplaceAll(xmlfile2, []byte("$1$2"))
+
 	var ret RetConsCad
-	err = xml.Unmarshal(xmlfile, &ret)
+	err = xml.Unmarshal(xmlfile2, &ret)
 	if err != nil {
 		return RetConsCad{}, xmlfile, fmt.Errorf("Erro na desserialização do arquivo XML: %w. Arquivo: %s", err, xmlfile)
 	}

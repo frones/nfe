@@ -73,19 +73,19 @@ const (
 )
 
 const (
-	urlConsCadAM = "https://nfe.sefaz.am.gov.br/services2/services/cadconsultacadastro2"
+	urlConsCadAM = "https://nfe.sefaz.am.gov.br/services2/services/CadConsultaCadastro2"
 	urlConsCadBA = "https://nfe.sefaz.ba.gov.br/webservices/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
 	urlConsCadCE = "https://nfe.sefaz.ce.gov.br/nfe4/services/CadConsultaCadastro4"
 	urlConsCadGO = "https://nfe.sefaz.go.gov.br/nfe/services/CadConsultaCadastro4"
-	urlConsCadMG = "https://nfe.fazenda.mg.gov.br/nfe2/services/cadconsultacadastro2"
+	urlConsCadMG = "https://nfe.fazenda.mg.gov.br/nfe2/services/CadConsultaCadastro4"
 	urlConsCadMS = "https://nfe.sefaz.ms.gov.br/ws/CadConsultaCadastro4"
 	urlConsCadMT = "https://nfe.sefaz.mt.gov.br/nfews/v2/services/CadConsultaCadastro4"
 	urlConsCadPE = "https://nfe.sefaz.pe.gov.br/nfe-service/services/CadConsultaCadastro4"
 	urlConsCadPR = "https://nfe.sefa.pr.gov.br/nfe/CadConsultaCadastro4"
-	urlConsCadRS = "https://nfe.sefazrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
+	urlConsCadRS = "https://cad.sefazrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
 	urlConsCadSP = "https://nfe.fazenda.sp.gov.br/ws/cadconsultacadastro4.asmx"
 	//	urlConsCadSVAN  = "https://www.sefazvirtual.fazenda.gov.br/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
-	urlConsCadSVRS = "https://nfe.svrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
+	urlConsCadSVRS = "https://cad.svrs.rs.gov.br/ws/cadconsultacadastro/cadconsultacadastro4.asmx"
 	//	urlConsCadSVCAN = "https://www.svc.fazenda.gov.br/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
 	//	urlConsCadSVCRS = "https://nfe.svrs.rs.gov.br/ws/CadConsultaCadastro/CadConsultaCadastro4.asmx"
 
@@ -93,7 +93,7 @@ const (
 	urlHomConsCadBA = "https://hnfe.sefaz.ba.gov.br/webservices/CadConsultaCadastro4/CadConsultaCadastro4.asmx"
 	urlHomConsCadCE = "https://nfeh.sefaz.ce.gov.br/nfe4/services/CadConsultaCadastro4"
 	urlHomConsCadGO = "https://homolog.sefaz.go.gov.br/nfe/services/CadConsultaCadastro4"
-	urlHomConsCadMG = "https://hnfe.fazenda.mg.gov.br/nfe2/services/cadconsultacadastroc"
+	urlHomConsCadMG = "https://hnfe.fazenda.mg.gov.br/nfe2/services/CadConsultaCadastro4"
 	urlHomConsCadMS = "https://hom.nfe.sefaz.ms.gov.br/ws/CadConsultaCadastro4"
 	urlHomConsCadMT = "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/CadConsultaCadastro4"
 	urlHomConsCadPE = "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/CadConsultaCadastro4"
@@ -172,7 +172,7 @@ func getURLWS(cUF int, tpAmb TAmb, ws TWebService) (string, error) {
 			}
 		case ConsultaCadastro:
 			switch cUF {
-			case 11, 12, 14, 15, 16, 17, 22, 24, 25, 27, 28, 32, 33, 42, 53:
+			case 12, 24, 25, 42:
 				return urlConsCadSVRS, nil
 			case 13:
 				return urlConsCadAM, nil
@@ -262,7 +262,7 @@ func getURLWS(cUF int, tpAmb TAmb, ws TWebService) (string, error) {
 			}
 		case ConsultaCadastro:
 			switch cUF {
-			case 11, 12, 14, 15, 16, 17, 22, 24, 25, 27, 28, 32, 33, 42, 53:
+			case 12, 24, 25, 42:
 				return urlHomConsCadSVRS, nil
 				//			case 13:
 				//				return urlHomConsCadAM, nil

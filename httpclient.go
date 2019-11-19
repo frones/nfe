@@ -2,14 +2,12 @@ package nfe
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"time"
-
-	"github.com/spacemonkeygo/openssl" //usando openssl no lugar da crypto/tls por alguma incompatibilidade com a Sefaz-RS que não consegui determinar a causa. Posteriormente pretendo investigar mais a fundo e se necessário abrir um bug report.
 )
 
 const defaultTimeout = 15 * time.Second
@@ -21,42 +19,18 @@ const defaultUserAgent = "GoNFe/0.1"
 //   openssl pkcs12 -in certificado.pfx -out ~/client.pem -clcerts -nokeys -nodes
 //   openssl pkcs12 -in certificado.pfx -out ~/key.pem -nocerts -nodes
 func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
-	pem, err := ioutil.ReadFile(certFile)
+	cert, err := tls.LoadX509KeyPair(certFile, certKeyFile)
 	if err != nil {
-		return nil, fmt.Errorf("Erro na leitura do arquivo PEM do certificado. Detalhes: %w", err)
-	}
-	cert, err := openssl.LoadCertificateFromPEM(pem)
-	if err != nil {
-		return nil, fmt.Errorf("Erro ao carregar o certificado do arquivo PEM. Detalhes: %w", err)
-	}
-
-	pem, err = ioutil.ReadFile(certKeyFile)
-	if err != nil {
-		return nil, fmt.Errorf("Erro na leitura do arquivo PEM da chave. Detalhes: %w", err)
-	}
-	key, err := openssl.LoadPrivateKeyFromPEM(pem)
-	if err != nil {
-		return nil, fmt.Errorf("Erro ao carregar a chave do arquivo PEM. Detalhes: %w", err)
-	}
-
-	ctx, err := openssl.NewCtx()
-	if err != nil {
-		return nil, fmt.Errorf("Erro na criação do context SSL. Detalhes: %w", err)
-	}
-	err = ctx.UseCertificate(cert)
-	if err != nil {
-		return nil, fmt.Errorf("Erro ao adicionar o certificado ao context. Detalhes: %w", err)
-	}
-	err = ctx.UsePrivateKey(key)
-	if err != nil {
-		return nil, fmt.Errorf("Erro ao adicionar a chave ao context. Detalhes: %w", err)
+		return nil, fmt.Errorf("Erro no carregamento do certificado digital. Detalhes: %w", err)
 	}
 
 	client := http.Client{
 		Timeout: defaultTimeout,
 		Transport: &http.Transport{
-			DialTLS: func(network, address string) (net.Conn, error) {
-				return openssl.Dial(network, address, ctx, 0)
+			TLSClientConfig: &tls.Config{
+				Certificates:       []tls.Certificate{cert},
+				InsecureSkipVerify: true,
+				Renegotiation:      tls.RenegotiateFreelyAsClient,
 			},
 		},
 	}

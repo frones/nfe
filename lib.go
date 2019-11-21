@@ -7,7 +7,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/frones/gobr"
+	"github.com/frones/brdocs"
 )
 
 // isNumber verifica se todos os caracteres da string são dígitos numéricos (usado internamente para validação da chave de acesso).
@@ -109,7 +109,7 @@ func ValidaChaveDeAcesso(DFeChave string) bool {
 		return false
 	}
 
-	if !gobr.ValidaCNPJ(cnpj) {
+	if !brdocs.ValidaCNPJ(cnpj) {
 		return false
 	}
 

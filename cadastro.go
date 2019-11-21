@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	"github.com/frones/gobr"
+	"github.com/frones/brdocs"
 )
 
 const VerConsCad = "2.00"
@@ -82,7 +82,7 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 		if (cons.InfCons.CNPJ != "") || (cons.InfCons.CPF != "") {
 			return RetConsCad{}, nil, fmt.Errorf("Erro na consulta de cadastro: apenas um documento deve ser informado (IE, CNPJ ou CPF)")
 		}
-		if !gobr.ValidaIE(cons.InfCons.IE, cons.InfCons.UF) {
+		if !brdocs.ValidaIE(cons.InfCons.IE, cons.InfCons.UF) {
 			return RetConsCad{}, nil, fmt.Errorf("Erro na consulta de cadastro: IE inválida: %s", cons.InfCons.IE)
 		}
 	}
@@ -90,7 +90,7 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 		if (cons.InfCons.IE != "") || (cons.InfCons.CPF != "") {
 			return RetConsCad{}, nil, fmt.Errorf("Erro na consulta de cadastro: apenas um documento deve ser informado (IE, CNPJ ou CPF)")
 		}
-		if !gobr.ValidaCNPJ(cons.InfCons.CNPJ) {
+		if !brdocs.ValidaCNPJ(cons.InfCons.CNPJ) {
 			return RetConsCad{}, nil, fmt.Errorf("Erro na consulta de cadastro: CNPJ inválido: %s", cons.InfCons.CNPJ)
 		}
 	}
@@ -98,7 +98,7 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 		if (cons.InfCons.CNPJ != "") || (cons.InfCons.IE != "") {
 			return RetConsCad{}, nil, fmt.Errorf("Erro na consulta de cadastro: apenas um documento deve ser informado (IE, CNPJ ou CPF)")
 		}
-		if !gobr.ValidaCPF(cons.InfCons.CPF) {
+		if !brdocs.ValidaCPF(cons.InfCons.CPF) {
 			return RetConsCad{}, nil, fmt.Errorf("Erro na consulta de cadastro: CPF inválido: %s", cons.InfCons.CPF)
 		}
 	}

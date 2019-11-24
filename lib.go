@@ -1,5 +1,5 @@
-//O package gonfe fornece funções para fazer toda a comunicação com as Sefazes no âmbito da NFe.
-package gonfe
+//O package nfe fornece funções para fazer toda a comunicação com as Sefazes no âmbito da NFe.
+package nfe
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package gonfe
+package nfe
 
 import (
 	"encoding/json"
@@ -8,12 +8,12 @@ import (
 
 // Esse exemplo mostra todos os passos para se fazer uma consulta de protocolo na Sefaz. Desde a criação de um novo http.Client (através da NewHTTPClient) até a personalização do User-Agent por meio do parâmetro optReq.
 func ExampleConsultaNFe() {
-	client, err := gonfe.NewHTTPClient("~/client.pem", "~/key.pem")
+	client, err := nfe.NewHTTPClient("~/client.pem", "~/key.pem")
 	if err != nil {
 		fmt.Printf("Erro na criação do HTTP Client e leitura do certificado. Detalhes: %v\n", err)
 		return
 	}
-	ret, xmlfile, err := gonfe.ConsultaNFe("12345678901234567890123456789012345678901234", gonfe.Homologacao, client, func(req *http.Request) { req.Header.Set("User-Agent", "MyUA/1.0") })
+	ret, xmlfile, err := nfe.ConsultaNFe("12345678901234567890123456789012345678901234", nfe.Homologacao, client, func(req *http.Request) { req.Header.Set("User-Agent", "MyUA/1.0") })
 	if err != nil {
 		fmt.Printf("Erro na consulta da chave de acesso. Detalhes: %v\n", err)
 		return
@@ -31,15 +31,15 @@ func ExampleConsultaNFe() {
 }
 
 func ExampleConsSitNFe_Consulta() {
-	client, err := gonfe.NewHTTPClient("~/client.pem", "~/key.pem")
+	client, err := nfe.NewHTTPClient("~/client.pem", "~/key.pem")
 	if err != nil {
 		fmt.Printf("Erro na criação do HTTP Client e leitura do certificado. Detalhes: %v\n", err)
 		return
 	}
 
-	cons := gonfe.ConsSitNFe{
-		Versao: gonfe.VerConsSitNFe,
-		TpAmb:  gonfe.Homologacao,
+	cons := nfe.ConsSitNFe{
+		Versao: nfe.VerConsSitNFe,
+		TpAmb:  nfe.Homologacao,
 		XServ:  "CONSULTAR",
 		ChNFe:  "12345678901234567890123456789012345678901234",
 	}
@@ -56,12 +56,12 @@ func ExampleConsSitNFe_Consulta() {
 
 // Esse exemplo mostra todos os passos para se fazer uma consulta de status do serviço na Sefaz. Desde a criação de um novo http.Client (através da NewHTTPClient) até a personalização do User-Agent por meio do parâmetro optReq.
 func ExampleConsultaStatServ() {
-	client, err := gonfe.NewHTTPClient("~/client.pem", "~/key.pem")
+	client, err := nfe.NewHTTPClient("~/client.pem", "~/key.pem")
 	if err != nil {
 		fmt.Printf("Erro na criação do HTTP Client e leitura do certificado. Detalhes: %v\n", err)
 		return
 	}
-	ret, xmlfile, err := gonfe.ConsultaStatServ(35, gonfe.Homologacao, client, func(req *http.Request) { req.Header.Set("User-Agent", "MyUA/1.0") })
+	ret, xmlfile, err := nfe.ConsultaStatServ(35, nfe.Homologacao, client, func(req *http.Request) { req.Header.Set("User-Agent", "MyUA/1.0") })
 	if err != nil {
 		fmt.Printf("Erro na consulta da chave de acesso. Detalhes: %v\n", err)
 		return
@@ -79,15 +79,15 @@ func ExampleConsultaStatServ() {
 }
 
 func ExampleConsStatServ_Consulta() {
-	client, err := gonfe.NewHTTPClient("~/client.pem", "~/key.pem")
+	client, err := nfe.NewHTTPClient("~/client.pem", "~/key.pem")
 	if err != nil {
 		fmt.Printf("Erro na criação do HTTP Client e leitura do certificado. Detalhes: %v\n", err)
 		return
 	}
 
-	cons := gonfe.ConsStatServ{
-		Versao: gonfe.VerConsStatServ,
-		TpAmb:  gonfe.Homologacao,
+	cons := nfe.ConsStatServ{
+		Versao: nfe.VerConsStatServ,
+		TpAmb:  nfe.Homologacao,
 		XServ:  "STATUS",
 		CUF:    35,
 	}

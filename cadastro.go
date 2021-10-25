@@ -118,11 +118,11 @@ func (cons ConsCad) Consulta(tpAmb TAmb, client *http.Client, optReq ...func(req
 	xmlfile2 := re.ReplaceAll(xmlfile, []byte("$1-03:00$2"))
 
 	// normalizando o formato dos campos dIniAtiv, dUltSit e dBaixa para civil.Date (yyyy-mm-dd)
-	re = regexp.MustCompile(`(<dIniAtiv>[\d]{4}-[\d]{2}-[\d]{2}).*(<\/dIniAtiv>)`)
+	re = regexp.MustCompile(`(<dIniAtiv>[\d]{4}-[\d]{2}-[\d]{2})[\dT\-:Z]+(<\/dIniAtiv>)`)
 	xmlfile2 = re.ReplaceAll(xmlfile2, []byte("$1$2"))
-	re = regexp.MustCompile(`(<dUltSit>[\d]{4}-[\d]{2}-[\d]{2}).*(<\/dUltSit>)`)
+	re = regexp.MustCompile(`(<dUltSit>[\d]{4}-[\d]{2}-[\d]{2})[\dT\-:Z]+(<\/dUltSit>)`)
 	xmlfile2 = re.ReplaceAll(xmlfile2, []byte("$1$2"))
-	re = regexp.MustCompile(`(<dBaixa>[\d]{4}-[\d]{2}-[\d]{2}).*(<\/dBaixa>)`)
+	re = regexp.MustCompile(`(<dBaixa>[\d]{4}-[\d]{2}-[\d]{2})[\dT\-:Z]+(<\/dBaixa>)`)
 	xmlfile2 = re.ReplaceAll(xmlfile2, []byte("$1$2"))
 
 	var ret RetConsCad

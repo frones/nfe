@@ -92,8 +92,9 @@ func sendRequest(obj interface{}, url string, xmlns string, soapAction string, c
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Falha na consulta à receita (%s): %d", url, resp.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, &WSError{url, resp.StatusCode, resp.Status, string(body)}
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)

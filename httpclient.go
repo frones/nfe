@@ -3,6 +3,7 @@ package nfe
 import (
 	"bytes"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -16,22 +17,29 @@ const defaultUserAgent = "GoNFe/0.1"
 // NewHTTPClient cria um http.Client com todas as configurações necessárias para comunicação com as Sefazes.
 //
 // O certificado digital para usar com essa biblioteca pode ser gerado a partir de um certificado A1 da seguinte maneira:
-//   openssl pkcs12 -in certificado.pfx -out ~/client.pem -clcerts -nokeys -nodes
-//   openssl pkcs12 -in certificado.pfx -out ~/key.pem -nocerts -nodes
+//
+//	openssl pkcs12 -in certificado.pfx -out ~/client.pem -clcerts -nokeys -nodes
+//	openssl pkcs12 -in certificado.pfx -out ~/key.pem -nocerts -nodes
 func NewHTTPClient(certFile string, certKeyFile string) (*http.Client, error) {
+	tlsConfig := tls.Config{}
+
 	cert, err := tls.LoadX509KeyPair(certFile, certKeyFile)
 	if err != nil {
 		return nil, fmt.Errorf("Erro no carregamento do certificado digital. Detalhes: %w", err)
 	}
+	tlsConfig.Certificates = []tls.Certificate{cert}
+
+	caCertPool, err := x509.SystemCertPool()
+	if err != nil {
+		return nil, fmt.Errorf("Erro no carregamento da cadeia de certificados do sistema. Detalhes: %w", err)
+	}
+	tlsConfig.RootCAs = caCertPool
+	tlsConfig.Renegotiation = tls.RenegotiateOnceAsClient
 
 	client := http.Client{
 		Timeout: defaultTimeout,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				Certificates:       []tls.Certificate{cert},
-				InsecureSkipVerify: true,
-				Renegotiation:      tls.RenegotiateFreelyAsClient,
-			},
+			TLSClientConfig: &tlsConfig,
 		},
 	}
 
@@ -90,7 +98,7 @@ func sendRequest(obj interface{}, url string, xmlns string, soapAction string, c
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Erro na leitura do corpo da resposta: %w", err)
 	}
 
 	if url == urlConsCadMT {
